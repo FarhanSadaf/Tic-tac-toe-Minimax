@@ -41,13 +41,15 @@ def game_over():
     return False
 
 def minimax(board, depth, alpha, beta, maximizing_player):
+    '''
+    maximizing player: AI
+    '''
     global playersigns
     scores = {
         0: -1,      # Human
         1: +1       #AI
     }
     winner, _ =  Board.check_winner(board, playersigns)
-    print(depth)
     if winner != None:
         return scores[winner]
     elif Board.all_filled(board) or depth == 0:
@@ -86,8 +88,8 @@ def get_ai_move(board):
     for i in range(len(board)):
         for j in range(len(board)):
             if board[i][j] == ' ':
-                board[i][j] = playersigns[1]
-                score = minimax(board, 3, +inf, -inf, False)
+                board[i][j] = playersigns[1]    # Turn for AI
+                score = minimax(board, 3, +inf, -inf, False)    # Turn for Player
                 board[i][j] = ' '
                 if score > max_score:
                     max_score = score

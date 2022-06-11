@@ -40,16 +40,17 @@ def game_over():
     player = (player + 1) % 2
     return False
 
-def minimax(board, maximizing_player):
+def minimax(board, depth, alpha, beta, maximizing_player):
     global playersigns
     scores = {
         0: -1,      # Human
         1: +1       #AI
     }
     winner, _ =  Board.check_winner(board, playersigns)
+    print(depth)
     if winner != None:
         return scores[winner]
-    elif Board.all_filled(board):
+    elif Board.all_filled(board) or depth == 0:
         return 0
 
     if maximizing_player:
@@ -58,9 +59,12 @@ def minimax(board, maximizing_player):
             for j in range(len(board)):
                 if board[i][j] == ' ':
                     board[i][j] = playersigns[1]
-                    eval = minimax(board, maximizing_player=False)
+                    eval = minimax(board, depth-1, alpha, beta, maximizing_player=False)
                     board[i][j] = ' '
                     max_eval = max(eval, max_eval)
+                    alpha = max(alpha, eval)
+                    if beta <= alpha:
+                        break
         return max_eval
     else:
         min_eval = inf
@@ -68,9 +72,12 @@ def minimax(board, maximizing_player):
             for j in range(len(board)):
                 if board[i][j] == ' ':
                     board[i][j] = playersigns[0]
-                    eval = minimax(board, maximizing_player=True)
+                    eval = minimax(board, depth-1, alpha, beta, maximizing_player=True)
                     board[i][j] = ' '
                     min_eval = min(eval, min_eval)
+                    beta = min(beta, eval)
+                    if beta <= alpha:
+                        break
         return min_eval
 
 def get_ai_move(board):
@@ -80,7 +87,7 @@ def get_ai_move(board):
         for j in range(len(board)):
             if board[i][j] == ' ':
                 board[i][j] = playersigns[1]
-                score = minimax(board, False)
+                score = minimax(board, 3, +inf, -inf, False)
                 board[i][j] = ' '
                 if score > max_score:
                     max_score = score
